@@ -41,3 +41,30 @@ class Content(models.Model):
 
     object_id = models.PositiveIntegerField()
     item = GenericForeignKey('content_type', 'object_id')
+
+class ItemBase(models.Model):
+    # related name example: Course -> course_related & user.course_related.all(), Module  -> module_related & user.module_related.all()
+    owner = models.ForeignKey(User, related_name= '%(class)s_related', on_delete=models.CASCADE)
+    title = models.CharField(max_length=250)
+    #auto_now_add -> date of obj. creation 
+    created = models.DateTimeField(auto_now_add=True)
+    #auto_now -> last date of changed obj.
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract=True
+
+    def __str__(self):
+        return self.title
+
+class Text(ItemBase):
+    content = models.TextField()
+
+class File(ItemBase):
+    file = models.FileField(upload_to='files')
+
+class Image(ItemBase):
+    image = models.ImageField(upload_to='image')
+
+class Video(ItemBase):
+    video = models.URLField()
